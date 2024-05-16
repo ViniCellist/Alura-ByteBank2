@@ -6,7 +6,7 @@ import { Transacao } from "./Transacao.js";
 export class Conta {
     protected nome: string
     protected saldo: number = Armazenador.obter<number>("saldo") || 0;
-    transacoes: Transacao[] = Armazenador.obter<Transacao>(("transacoes"), (key: string, value: any) => {
+    private transacoes: Transacao[] = Armazenador.obter<Transacao[]>(("transacoes"), (key: string, value: any) => {
         if (key === 'data') {
             return new Date(value);
         }
@@ -90,6 +90,16 @@ export class Conta {
 
 }
 
-const conta = new Conta("Vinicius de Souza Duarte");
+export class ContaPremium extends Conta {
+    registrarTransacao(transacao: Transacao): void {
+        if (transacao.tipoTransacao === TipoTransacao.DEPOSITO) {
+            console.log("Ganhou um bônus de 0.50 centavos")
+            transacao.valor += 0.5
+        }
+        super.registrarTransacao(transacao)
+    }
+}
 
+const conta = new Conta("Vinicius de Souza Duarte");
+const contaPremium = new ContaPremium("Vinicius Duarte");
 export default conta;
